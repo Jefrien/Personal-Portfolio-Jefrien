@@ -1,0 +1,134 @@
+---
+import PagesMenu from "../../components/Layout/PagesMenu.astro";
+import HeadPages from "../../components/Layout/HeadPages.astro";
+import Layout from "../../layouts/Layout.astro";
+import fetchApi, { fetchApiQs } from "../../lib/strapi";
+import { getLocales } from "../../locale";
+import type { Block, Image, Project } from "../../types";
+import Contact from "../../components/Layout/Contact.astro";
+import Footer from "../../components/Layout/Footer.astro";
+import { convertStrapiBlocksToHtml } from "../../lib/json-converter";
+import DialogContacMe from "../../components/DialogContacMe.astro";
+import Tecnologies from "../../components/Project/Tecnologies.astro";
+import ResponsiveImage from "../../components/ResponsiveImage.astro";
+
+const indexLang = "es-GT";
+
+const locales = await getLocales(indexLang);
+
+export async function getStaticPaths() {
+    const indexLang = "es-GT";
+    const projectsData = await fetchApi<Project[]>({
+        endpoint: "projects",
+        wrappedByKey: "data",
+        query: {
+            locale: indexLang,
+            sort: "publishedAt:desc",
+            "fields[0]": "slug",
+        },
+    });
+
+    const paths = projectsData.map((project) => {
+        return {
+            params: {
+                slug: project.attributes.slug,
+            },
+        };
+    });
+    console.log(paths);
+    return paths;
+}
+
+const { slug } = Astro.params;
+const projects: Project[] = await fetchApiQs<Project[]>({
+    endpoint: "projects",
+    wrappedByKey: "data",
+    queryQs: {
+        locale: [indexLang],
+        filters: {
+            slug: {
+                $eq: slug,
+            },
+        },
+        populate: {
+            image: {
+                fields: ["url"],
+            },
+            tecnologias: {
+                fields: ["name"],
+                populate: ["logo"],
+            },
+            single_details: {
+                populate: {
+                    section_image: {
+                        fields: ["url"],
+                    },
+                    section_content: {
+                        fields: ["html"],
+                    },
+                },
+            },
+            localizations: {
+                fields: ["slug"],
+            },
+        },
+    },
+});
+const project = projects[0];
+
+let localization_slug =
+    project.attributes.localizations?.data[0].attributes.slug;
+
+const pageTitle = `${project.attributes.name} - Jefrien Alvizures`;
+---
+
+<Layout title={pageTitle} description={project.attributes.name + ': ' + project.attributes.description}>
+    <PagesMenu locales={locales} />
+    <HeadPages
+        project={project}
+        localization_link={"/project/" + localization_slug}
+        locales={locales}
+        image={project.attributes.image.data?.attributes.url}
+        title={project.attributes.name}
+        subtitle={project.attributes.description}
+    />
+
+    <Tecnologies project={project} locales={locales} />
+
+    {
+        project.attributes.single_details?.map((detail) => (
+            <div class="py-12 group odd:bg-neutral-100">
+                <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="group-odd:order-2 px-8">
+                        <ResponsiveImage
+                            image={
+                                detail.section_image.data?.attributes as Image
+                            }
+                            alt={
+                                project.attributes.name +
+                                " - Project Demo Image"
+                            }
+                            class:list={
+                                "w-full  rounded-2xl rotate-6 group-hover:rotate-0 transition-transform duration-300"
+                            }
+                            width={720}
+                            sizes={[300, 420, 600, 720]}
+                        />
+                    </div>
+                    <div
+                        class="prose lg:prose-xl flex justify-center flex-col !text-2 xl group-even:order-2"
+                        set:html={convertStrapiBlocksToHtml(
+                            detail.section_content as Block[],
+                        )}
+                    />
+                </div>
+            </div>
+        ))
+    }
+
+    <DialogContacMe project={project} locales={locales} indexLang={indexLang} />
+
+    <Contact locales={locales} />
+
+    <Footer locales={locales} />
+</Layout>

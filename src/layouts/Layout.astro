@@ -1,0 +1,31 @@
+---
+import "../global.css";
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const currentUrl = Astro.url.toString();
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description || "Portafolio Jefrien Alvizures"} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.ico" />		
+		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={currentUrl}> 
+		<title>{title}</title>
+		<script src="https://www.google.com/recaptcha/api.js?render=6LfN09cqAAAAAMaQ9dLHSV_JzUhOiik-aFg_icJb" defer></script>
+		<style is:global>
+			.grecaptcha-badge { visibility: hidden }
+		</style>
+	</head>
+	<body class=" overflow-x-hidden">
+		<slot />
+	</body>
+</html>

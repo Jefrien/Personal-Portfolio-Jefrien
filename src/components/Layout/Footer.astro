@@ -1,0 +1,13 @@
+---
+import { getLocaleText } from "../../lib/helpers";
+
+interface Props {
+    locales: any;
+}
+
+const year = new Date().getFullYear();
+const { locales } = Astro.props;
+---
+<footer class="footer text-center text-sm p-10 bg-slate-800 text-white">
+    {year} - {getLocaleText(locales, 'footer_text')} <a class="hover:underline" href="https://www.linkedin.com/in/jefrien-alvizures">Jefrien Alvizures</a>
+</footer>

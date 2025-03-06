@@ -1,0 +1,28 @@
+---
+import { getLocaleText } from "../../lib/helpers";
+import type { Project } from "../../types";
+import ProjectItem from "../ProjectItem.astro";
+
+
+interface Props {
+  locales: any[];
+  projects: Project[];
+}
+
+const { locales, projects } = Astro.props;
+---
+
+<div id="portafolio" class="py-16 bg-slate-100">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl uppercase text-center mb-12">{getLocaleText(locales, "menu_projects")}</h2>
+    <div
+      class="justify-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6"
+    >
+      { projects.map((project) => (
+        <ProjectItem project={project} locales={locales} />
+      )) }
+    </div>
+  </div>
+</div>
+
+

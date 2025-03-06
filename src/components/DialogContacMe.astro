@@ -1,0 +1,306 @@
+---
+import { getLocaleText } from "../lib/helpers";
+import fetchApi from "../lib/strapi";
+import type { Project } from "../types";
+
+interface Props {
+    project: Project;
+    locales: any;
+    indexLang: string;
+}
+
+const { project, locales, indexLang } = Astro.props;
+
+const projectsData = await fetchApi<Project[]>({
+    endpoint: "projects",
+    wrappedByKey: "data",
+    query: {
+        locale: indexLang,
+        "populate[0]": "image",
+        "populate[1]": "tecnologias",
+        sort: "publishedAt:desc",
+    },
+});
+
+const submit_url = import.meta.env.STRAPI_URL + "/api/ezforms/submit";
+---
+
+<div
+    id="dialog-contact-me"
+    class="z-50 dialog transition px-4 fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center"
+>
+    <form
+        id="contact-me-form"
+        class="dialog-body bg-white transition-all p-6 rounded-md shadow-lg w-full max-w-2xl relative"
+        action={submit_url}
+        method="post"
+    >
+        <input
+            type="hidden"
+            id="select_project"
+            value={project.attributes.name}
+        />
+        <input type="hidden" id="token-captcha" name="token-captcha" />
+
+        <h1 class="text-2xl font-bold mb-6">Contact me</h1>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="mb-4 form-group">
+                <label for="name">{getLocaleText(locales, 'field_full_name')}</label>
+                <input type="text" id="name" required />
+            </div>
+            <div class="mb-4 form-group">
+                <label for="email">{getLocaleText(locales, 'field_email')}</label>
+                <input type="email" id="email" required />
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="mb-4 form-group">
+                <label for="phone">Phone (whatsapp)</label>
+                <input type="tel" id="phone" required />
+            </div>
+            <div class="mb-4 form-group">
+                <label for="project">Project</label>
+                <select id="project" required>
+                    <option value="">Select a project</option>
+                    {
+                        projectsData.map((project) => (
+                            <option value={project.attributes.name}>
+                                {project.attributes.name}
+                            </option>
+                        ))
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="mb-4 form-group">
+            <label for="message">Message</label>
+            <textarea id="message" rows="4" required></textarea>
+        </div>
+
+        <div class="p-2 text-left font-medium border mb-4 items-center hidden message">
+            Messge
+        </div>
+
+        <div class="flex justify-end">
+            <button
+                type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                >Send</button
+            >
+        </div>
+
+        <div
+            class="loader hidden bg-white/80 items-center justify-center absolute left-0 top-0 w-full h-full"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="45"
+                height="45"
+                viewBox="0 0 45 45"
+                stroke="#fff"
+            >
+                <g
+                    fill="none"
+                    fill-rule="evenodd"
+                    transform="translate(1 1)"
+                    stroke-width="2"
+                >
+                    <circle cx="22" cy="22" r="6" stroke-opacity="0">
+                        <animate
+                            attributeName="r"
+                            begin="1.5s"
+                            dur="3s"
+                            values="6;22"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                        <animate
+                            attributeName="stroke-opacity"
+                            begin="1.5s"
+                            dur="3s"
+                            values="1;0"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                        <animate
+                            attributeName="stroke-width"
+                            begin="1.5s"
+                            dur="3s"
+                            values="2;0"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                    </circle>
+                    <circle cx="22" cy="22" r="6" stroke-opacity="0">
+                        <animate
+                            attributeName="r"
+                            begin="3s"
+                            dur="3s"
+                            values="6;22"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                        <animate
+                            attributeName="stroke-opacity"
+                            begin="3s"
+                            dur="3s"
+                            values="1;0"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                        <animate
+                            attributeName="stroke-width"
+                            begin="3s"
+                            dur="3s"
+                            values="2;0"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                    </circle>
+                    <circle cx="22" cy="22" r="8">
+                        <animate
+                            attributeName="r"
+                            begin="0s"
+                            dur="1.5s"
+                            values="6;1;2;3;4;5;6"
+                            calcMode="linear"
+                            repeatCount="indefinite"></animate>
+                    </circle>
+                </g>
+            </svg>
+        </div>
+    </form>
+</div>
+
+<script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+        const dialog_wrapper = document.querySelector("#dialog-contact-me");
+        const trigger = document.querySelector(
+            '[data-dialog="dialog-contact-me"]',
+        );
+        const dialog_body = document.querySelector(".dialog-body");
+
+        const showDialog = () => {
+            dialog_wrapper.classList.add("show");
+            setTimeout(() => {
+                dialog_body.classList.add("show");
+            }, 100);
+        };
+
+        const hideDialog = () => {
+            dialog_body.classList.remove("show");
+            setTimeout(() => {
+                dialog_wrapper.classList.remove("show");
+            }, 100);
+        };
+
+        trigger.addEventListener("click", showDialog);
+        dialog_wrapper.addEventListener("click", hideDialog);
+        dialog_body.addEventListener("click", (e) => e.stopPropagation());
+
+        // set default project
+        const projectSelect = document.querySelector("#project");
+        projectSelect.value = document.getElementById("select_project").value;
+
+        const form = document.querySelector("#contact-me-form");
+        console.log("form el", form);
+        const loader = document.querySelector(".loader");     
+        const message = document.querySelector(".message");  
+
+        const submitForm = async () => {
+            try {
+                const data = {
+                    name: form.elements.name.value,
+                    email: form.elements.email.value,
+                    project: form.elements.project.value,
+                    message: form.elements.message.value,
+                };
+
+                const token = document.getElementById("token-captcha").value;
+                const formData = {
+                    token,
+                    formName: "Contact Me Project",
+                    formData: data,
+                };
+
+                const action_url = form.getAttribute("action");
+                await fetch(action_url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                });
+                
+                message.classList.add("success-message");
+                message.textContent = "Your message has been sent successfully!";
+
+                form.reset();
+            } catch (error) {
+                alert("Something went wrong. Please try again later.");
+                message.classList.add("error-message");
+                message.textContent = "Something went wrong. Please try again later.";
+            } finally {
+                loader.classList.add("hidden");
+            }
+        };
+
+        // submission
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            loader.classList.remove("hidden");
+            grecaptcha.ready(function () {
+                grecaptcha
+                    .execute("6LfN09cqAAAAAMaQ9dLHSV_JzUhOiik-aFg_icJb", {
+                        action: "submit",
+                    })
+                    .then(function (token) {
+                        document.getElementById("token-captcha").value = token;
+                        submitForm();
+                    })
+                    .catch(function (error) {
+                        loader.classList.add("hidden");
+                        message.classList.add("error-message");
+                        message.textContent = "Something went wrong. Please try again later.";
+                    });
+            });
+        });
+    });
+</script>
+
+<style>
+    .dialog {
+        @apply opacity-0 pointer-events-none;
+    }
+
+    .dialog.show {
+        @apply opacity-100 pointer-events-auto;
+    }
+
+    .dialog-body {
+        @apply opacity-0 scale-95;
+    }
+
+    .dialog-body.show {
+        @apply opacity-100 scale-100;
+    }
+
+    .form-group label {
+        @apply block uppercase text-sm font-bold text-gray-600;
+    }
+
+    .form-group input:not([type="checkbox"]),
+    .form-group textarea,
+    .form-group select {
+        @apply mt-1 w-full h-11 block px-4 py-2 rounded-md text-gray-700 bg-neutral-100 border-2 border-neutral-300 outline-none focus:border-blue-600 focus:shadow-md;
+    }
+
+    .form-group textarea {
+        @apply h-auto;
+    }
+
+    .error-message {
+        @apply text-red-600 text-sm border-red-600 bg-red-50 !flex;
+    }
+
+    .success-message {
+        @apply text-green-600 text-sm border-green-600 bg-green-50 !flex;
+    }
+
+    .grecaptcha-badge { visibility: hidden; }
+</style>

@@ -1,0 +1,152 @@
+---
+import { getLocaleText } from "../../lib/helpers";
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+    locales: any;
+}
+
+const { locales } = Astro.props;
+
+const menuItems = [
+    { id: "home", text: "menu_home" },
+    { id: "about", text: "menu_about" },
+    { id: "portafolio", text: "menu_projects" },
+    { id: "contact", text: "contact_title" },
+];
+
+---
+
+<div class="navbar bg-slate-800 z-20" id="nav-app">
+
+    <div class="lg:hidden relative">
+       <button 
+        aria-label="Site Menu"
+       class="btn-trigger-menu h-12 w-12 flex items-center justify-center hover:bg-slate-700">
+            <Icon name="menu" class="text-white h-6 w-6" />
+       </button>
+       <div class="mobile-menu transition-all absolute max-w-44 w-full p-2 rounded-xl bg-slate-700 shadow-lg top-14 left-1 text-white opacity-0 pointer-events-none">
+            <ul class="flex flex-col gap-2">
+                { menuItems.map((item) => (
+                    <li class="uppercase text-sm">
+                        <a href={`#${item.id}`} data-scroll={`#${item.id}`} class="h-full w-full hover:bg-blue-600 rounded-lg  px-4 py-2 flex items-center">
+                            {getLocaleText(locales, item.text)}
+                        </a>
+                    </li>
+                )) }
+            </ul>
+       </div>
+    </div>
+
+    <div class="navbar-center hidden lg:flex h-full">
+        <ul class="flex items-center justify-center gap-2 w-full h-full p-0 text-white">
+            { menuItems.map((item) => (
+                <li class="hover:bg-slate-700 h-full uppercase text-sm">
+                    <a href={`#${item.id}`} data-scroll={`#${item.id}`} class="h-full w-full px-4  flex items-center">
+                        {getLocaleText(locales, item.text)}
+                    </a>
+                </li>
+            )) }
+        </ul>
+    </div>
+</div>
+
+<script is:inline>
+    // on ready vanilla
+    document.addEventListener("DOMContentLoaded", function () {
+        let sticky = 0;
+        const btnTrigger = document.querySelector(".btn-trigger-menu");
+        const mobileMenu = document.querySelector(".mobile-menu");
+        let isOpen = false;
+
+        const handleMenuClick = () => {
+            if (isOpen) {
+                mobileMenu?.classList.remove("opacity-100");
+                mobileMenu?.classList.add("opacity-0");
+                mobileMenu?.classList.remove("pointer-events-auto");
+                mobileMenu?.classList.add("pointer-events-none");
+                isOpen = false;
+            } else {
+                mobileMenu?.classList.remove("opacity-0");
+                mobileMenu?.classList.add("opacity-100");
+                mobileMenu?.classList.remove("pointer-events-none");
+                mobileMenu?.classList.add("pointer-events-auto");
+                isOpen = true;
+            }
+        }
+
+        const closeMenu = () => {
+            mobileMenu?.classList.remove("opacity-100");
+            mobileMenu?.classList.add("opacity-0");
+            mobileMenu?.classList.remove("pointer-events-auto");
+            mobileMenu?.classList.add("pointer-events-none");
+            isOpen = false;
+        }
+
+        const setSticky = () => {
+            const header = document.getElementById("nav-app");
+            sticky = header?.offsetTop ? header.offsetTop : 0;
+        };
+
+        const setFixed = () => {
+            const header = document.getElementById("nav-app");
+            const firstSection = document.getElementById("about");
+            if ((window.pageYOffset) > sticky) {
+                header?.classList.add("fixed");
+                header?.classList.add("top-0");
+                header?.classList.add("left-0");
+                header?.classList.add("right-0");
+                header?.classList.add("z-10");
+                firstSection?.classList.add("mt-nav");
+            } else {
+                header?.classList.remove("fixed");
+                header?.classList.remove("top-0");
+                header?.classList.remove("right-0");
+                header?.classList.remove("left-0");
+                firstSection?.classList.remove("mt-nav");
+            }
+        };
+        const handleScroll = () => {
+            window.onscroll = () => {
+                setFixed();
+            };
+        };
+
+
+
+        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", setSticky);
+        
+        // on click data-scroll
+        const links = document.querySelectorAll("[data-scroll]");
+        links.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                closeMenu();
+                const target = (e.target).getAttribute("data-scroll");
+                console.log(target)
+                const element = document.querySelector(target);
+                if (element) {
+                    const to = element.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: to, behavior: "smooth" });
+                }
+            });
+        });
+
+
+        btnTrigger?.addEventListener("click", () => {
+            handleMenuClick();    
+        });
+
+        setSticky();
+        setFixed();
+    });
+</script>
+
+<style>
+    .navbar {
+        border-bottom: 4px solid #057aff;
+        min-height: 50px;
+        height: 50px;
+    }
+</style>

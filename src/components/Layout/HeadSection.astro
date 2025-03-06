@@ -1,0 +1,91 @@
+---
+import CanvasBG from './CanvasBG.astro';
+import { getLocaleText } from '../../lib/helpers';
+import { Icon } from "astro-icon/components";
+
+interface Props {    
+    locales: any[];
+}
+
+const { locales } = Astro.props;
+
+
+const getLocaleIcon = (locale: string) => {
+    switch (locale) {
+        case 'Spanish':
+            return '🇪🇸';
+        case 'Ingles':
+            return '🇬🇧';
+        default:
+            return '🌍';
+    }
+}
+
+const getLocaleHref = (locale: string) => {
+    switch (locale) {
+        case 'Spanish':
+            return '/es';
+        case 'Ingles':
+            return '/';
+        default:
+            return '/';
+    }
+}
+
+---
+
+<a
+    class="bg-slate-800 text-white px-5 py-2 hover:bg-slate-700 rounded-lg cursor-pointer select-none fixed z-30 top-1 right-1"
+href={getLocaleHref(getLocaleText(locales, 'lang_switch_text'))}>
+    { getLocaleIcon(getLocaleText(locales, 'lang_switch_text')) }
+    {getLocaleText(locales, 'lang_switch_text')
+}</a>
+
+<div 
+    id="home"
+class="max-h-96 relative md:max-h-screen h-screen flex items-center justify-center flex-col bg-slate-900 text-white">
+    <CanvasBG />
+    <div class="max-w-2xl mx-auto text-center z-10">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold">{getLocaleText(locales, 'hello')}</h1>
+        <h2 class="text-xl mt-5">{getLocaleText(locales, 'hello_description')}</h2>
+        <div class="flex justify-center items-center gap-6 mt-8">
+            <a
+                class="bg-blue-600 text-white px-4 py-2 flex items-center gap-2 hover:shadow-lg hover:shadow-blue-600/60 rounded-sm cursor-pointer select-none"
+                href="/Jefrien Alvizures.pdf" target="_blank">
+                <Icon name="download" class="w-6 h-6 fill-white" />
+                Curriculum
+            </a>
+            <a
+            class="bg-blue-600 text-white px-4 py-2 flex items-center gap-2 hover:shadow-lg hover:shadow-blue-600/60 rounded-sm cursor-pointer select-none"
+            href="https://www.linkedin.com/in/jefrien-alvizures/" target="_blank">
+            <Icon name="linkedin" class="w-6 h-6 fill-white" />
+            Linkedin
+        </a>
+        </div>
+    </div>
+    <div  class="arrow-down-header animate-bounce z-10 bg-slate-900 dark:bg-slate-800 p-2 w-10 h-10 ring-1 ring-slate-900/5 dark:ring-slate-200/20 shadow-lg rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 text-primary" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+      </div>  
+</div>
+
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+        const arrowDown = document.querySelector('.arrow-down-header');
+        arrowDown.addEventListener('click', () => {
+            // scroll to id about
+            const about = document.getElementById('about');
+            about.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
+
+<style>
+
+.arrow-down-header {
+    position: absolute;
+    bottom: 35px;
+}
+
+</style>

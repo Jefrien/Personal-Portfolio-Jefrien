@@ -1,0 +1,83 @@
+---
+import { getImageUrl, getLocaleText } from "../../lib/helpers";
+import type { Project } from "../../types";
+import ProjectContact from "./ProjectContact.astro";
+
+interface Props {
+    locales: any[];
+    title?: string;
+    subtitle?: string;
+    image?: string;
+    localization_link: string;
+    project: Project;
+}
+
+const { locales, title, subtitle, image, localization_link, project } = Astro.props;
+
+const getLocaleIcon = (locale: string) => {
+    switch (locale) {
+        case "Spanish":
+            return "🇪🇸";
+        case "Ingles":
+            return "🇬🇧";
+        default:
+            return "🌍";
+    }
+};
+
+---
+
+<a
+    class=" text-white px-5 py-2 hover:bg-white/20 rounded-lg cursor-pointer select-none fixed z-30 top-1 right-1"
+    href={localization_link}
+>
+    {getLocaleIcon(getLocaleText(locales, "lang_switch_text"))}
+    {getLocaleText(locales, "lang_switch_text")}</a
+>
+
+<div
+    id="home"
+    class="relative md:max-h-screen md:h-[22rem] bg-slate-900 text-white"
+>
+    {
+        image && (
+            <img
+                src={getImageUrl(image)}
+                alt={title}
+                class="object-cover h-full w-full absolute left-0 top-0"
+            />
+        )
+    }
+
+   <div class="relative w-full h-full top-0 left-0 pt-20 pb-6 bg-black/60 backdrop-blur-xl flex  items-center justify-center">
+        <div class="max-w-[80%] mx-auto flex flex-wrap md:flex-nowrap items-center gap-12">
+            {
+                image && (
+                    <img
+                        src={getImageUrl(image)}
+                        alt={title}
+                        class="object-contain max-h-44 border-2 rounded-2xl border-white/20"
+                    />
+                )
+            }
+            <div class="max-w-2xl mx-auto text-left z-10">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold">
+                    {title}
+                </h1>
+                <h2 class="text-xl mt-5">
+                    {subtitle}
+                </h2>
+                <ProjectContact project={project} locales={locales} />
+            </div>
+        </div>
+   </div>
+</div>
+
+
+
+<style>
+    .arrow-down-header {
+        position: absolute;
+        bottom: 35px;
+    }
+</style>

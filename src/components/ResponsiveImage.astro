@@ -1,0 +1,35 @@
+---
+import type { Image } from '../types'
+import { getImageUrl } from '../lib/helpers'
+
+interface Props {
+    image: Image,
+    alt: string
+    class?: string[]
+    loading?: 'eager' | 'lazy'
+    width?: number
+    height?: number  
+    sizes: number[]  
+}
+
+const { image, alt, class: classProp, loading, width, height, sizes } = Astro.props
+
+
+function getImageSet(size: number, index: number) {
+    const maxWidth = (index < sizes.length - 1) ? sizes[index + 1] - 1 : 'Infinity';
+    const srcset = `${getImageUrl(image.url)}?width=${size}`
+    const media = `(max-width: ${maxWidth}px)`
+    return {
+        srcset,
+        media
+    }
+}
+
+---
+
+<picture>    
+    {sizes.map((size, index) => (
+        <source srcset={getImageSet(size, index).srcset} media={getImageSet(size, index).media} />
+    ))}
+    <img src={getImageUrl(image.url)} alt={alt} loading={loading ?? 'lazy'} class:list={[classProp]} loading={loading} width={width} height={height} />
+  </picture>

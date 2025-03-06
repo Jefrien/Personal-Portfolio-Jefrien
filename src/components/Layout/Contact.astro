@@ -1,0 +1,60 @@
+---
+import { Icon } from 'astro-icon/components'
+import { getLocaleText } from "../../lib/helpers";
+
+interface Props {
+    locales: any;
+}
+
+const { locales } = Astro.props;
+---
+
+<div id="contact" class="py-16 px-4 bg-slate-800 text-white">
+    <div class="container mx-auto">
+        <h2 class="text-4xl uppercase text-center mb-12">
+            { getLocaleText(locales, 'contact_title') }
+        </h2>
+        <div class="info text-center text-xl sm:text-2xl mt-12">
+            <div class="px-8 py-4 bg-slate-700 inline-block rounded-sm">
+                jefrienalvizures@gmail.com
+            </div>
+        </div>
+        <div class="flex justify-center mt-12 flex-wrap">
+            <a
+                href="//www.linkedin.com/in/jefrien-alvizures"
+                target="_blank"
+                aria-label="Linkedin"
+                class="transition inline-block px-6 py-6 mr-4 bg-slate-700 hover:bg-[#0a66c2] rounded-full"
+                >
+                <Icon name="linkedin" class=" h-12 w-12" />
+                </a
+            >
+            <a
+                href="https://www.facebook.com/armando1262013"
+                target="_blank"
+                aria-label="Facebook"
+                class="transition inline-block px-6 py-6 bg-slate-700 hover:bg-[#1877f2] rounded-full"
+                >
+                <Icon name="facebook" class=" h-12 w-12" />
+                </a
+            >
+            <a
+                href="mailto:jefrienalvizures@gmail.com"
+                target="_blank"
+                aria-label="Email"
+                class="transition inline-block px-6 py-6 ml-4 bg-slate-700 hover:bg-purple-800 rounded-full"
+                >
+                <Icon name="email" class=" h-12 w-12" />
+                </a
+            >
+            <a
+                href="https://api.whatsapp.com/send?phone=50249575335&text=Hola,%20te%20contacto%20desde%20tu%20portafolio!"
+                target="_blank"
+                aria-label="Whatsapp"
+                class="transition inline-block px-6 py-6 ml-4 bg-slate-700 hover:bg-[#128c7e] rounded-full"
+                >
+                <Icon name="whatsapp" class=" h-12 w-12" />
+            </a>
+        </div>
+    </div>
+</div>

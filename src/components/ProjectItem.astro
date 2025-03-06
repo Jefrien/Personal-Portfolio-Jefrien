@@ -1,0 +1,213 @@
+---
+import { type Image, type Project } from "../types";
+import { getLocaleText } from "../lib/helpers";
+import { Icon } from "astro-icon/components";
+import ResponsiveImage from "./ResponsiveImage.astro";
+
+interface Props {
+    project: Project;
+    locales: any;
+}
+
+const { project, locales } = Astro.props;
+---
+
+<div class="bg-slate-800 text-white shadow-2xl rounded-2xl overflow-hidden">
+    <div class="h-48 w-full overflow-hidden relative">        
+        <ResponsiveImage
+            image={project.attributes.image.data?.attributes as Image}
+            alt={project.attributes.name}
+            class={"object-cover h-48 w-full transition-transform".split(" ")}
+            loading="lazy"
+            width={420}
+            height={320}                    
+            sizes={[600, 1440]}            
+        />  
+        <div
+            class="absolute w-full h-full bg-slate-800 opacity-0 hover:opacity-90 z-10 top-0 left-0 transition-opacity py-4 px-6 text-center flex justify-center items-center"
+        >
+            {project.attributes.description}
+        </div>
+    </div>
+
+    <div class="card-body py-3 px-3">
+        <h2 class="text-xl font-semibold">{project.attributes.name}</h2>
+        <div class="justify-start items-center space-y-2 mb-2 h-16">
+            {
+                project.attributes.tecnologias.data.map((tecnologia) => (
+                    <div class="bg-blue-600 hover:bg-blue-500 inline-flex items-center justify-center px-2 py-0 rounded-full text-sm mr-2">
+                        {tecnologia.attributes.name}
+                    </div>
+                ))
+            }
+        </div>
+        <div class="flex items-end gap-3 justify-center h-full">
+            {
+                project?.attributes?.url && (
+                    <tooltip-button>
+                        <div class="tooltip" role="tooltip">
+                            {getLocaleText(locales, "projects_go_tooltip")}
+                            <div class="arrow" data-popper-arrow />
+                        </div>
+
+                        <a
+                            href={project.attributes.url}
+                            target="_blank"
+                            aria-label={getLocaleText(
+                                locales,
+                                "projects_go_tooltip",
+                            )}
+                            class="has-tooltip inline-block px-2 py-2 rounded-full bg-slate-600 hover:drop-shadow-2xl cursor-pointer hover:opacity-80"
+                        >
+                            <Icon name="internet" class="w-6 h-6 fill-white" />
+                        </a>
+                    </tooltip-button>
+                )
+            }
+            {
+                project.attributes.git_url && (
+                    <tooltip-button>
+                        <div class="tooltip" role="tooltip">
+                            {getLocaleText(locales, "projects_view_tooltip")}
+                            <div class="arrow" data-popper-arrow />
+                        </div>
+
+                        <a
+                            href={project.attributes.git_url}
+                            target="_blank"
+                            aria-label={getLocaleText(
+                                locales,
+                                "projects_view_tooltip",
+                            )}
+                            class="inline-block px-2 py-2 rounded-full bg-[#e24329] hover:drop-shadow-2xl cursor-pointer hover:opacity-80"
+                        >
+                            <Icon name="git" class="w-6 h-6 fill-white" />
+                        </a>
+                    </tooltip-button>
+                )
+            }
+
+            <tooltip-button>
+                <div class="tooltip" role="tooltip">
+                    {getLocaleText(locales, "projects_details_tooltip")}
+                    <div class="arrow" data-popper-arrow></div>
+                </div>                
+
+                <a
+                    href={`/${getLocaleText(locales, "project_lang_url")}/${project.attributes.slug}`}
+                    target="_blank"
+                    aria-label={getLocaleText(locales, "projects_details_tooltip")}
+                    class="inline-block px-2 py-2 rounded-full bg-emerald-600 hover:drop-shadow-2xl cursor-pointer hover:opacity-80"
+                >
+                    <Icon name="eye" class="w-6 h-6 fill-white" />
+                </a>
+            </tooltip-button>            
+        </div>
+    </div>
+</div>
+
+<script>
+    import { createPopper } from "@popperjs/core";
+
+    class TooltipButton extends HTMLElement {
+        constructor() {
+            super();
+
+            const tooltip: any = this.querySelector(".tooltip");
+            const button: any = this.querySelector("a");
+
+            const popperInstance = createPopper(button, tooltip, {
+                placement: "top",
+                modifiers: [
+                    {
+                        name: "offset",
+                        options: {
+                            offset: [0, 8],
+                        },
+                    },
+                ],
+            });
+
+            function show() {
+                tooltip.setAttribute("data-show", "");
+
+                // We need to tell Popper to update the tooltip position
+                // after we show the tooltip, otherwise it will be incorrect
+                popperInstance.update();
+            }
+
+            function hide() {
+                tooltip.removeAttribute("data-show");
+            }
+
+            const showEvents = ["mouseenter", "focus"];
+            const hideEvents = ["mouseleave", "blur"];
+
+            showEvents.forEach((event) => {
+                button.addEventListener(event, show);
+            });
+
+            hideEvents.forEach((event) => {
+                button.addEventListener(event, hide);
+            });
+        }
+    }
+
+    customElements.define("tooltip-button", TooltipButton);
+</script>
+
+<style>
+    .tooltip {
+        @apply invisible absolute;
+    }
+
+    .has-tooltip:hover .tooltip {
+        @apply visible z-50;
+    }
+    .tooltip {
+        @apply bg-slate-600 text-white p-2 rounded-lg text-sm px-4;
+    }
+
+    .tooltip {
+        display: none;
+    }
+
+    .tooltip[data-show] {
+        display: block;
+        visibility: visible;
+    }
+
+    .arrow,
+    .arrow::before {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: inherit;
+    }
+
+    .arrow {
+        visibility: hidden;
+    }
+
+    .arrow::before {
+        visibility: visible;
+        content: "";
+        transform: rotate(45deg);
+    }
+
+    .tooltip[data-popper-placement^="top"] > .arrow {
+        bottom: -4px;
+    }
+
+    .tooltip[data-popper-placement^="bottom"] > .arrow {
+        top: -4px;
+    }
+
+    .tooltip[data-popper-placement^="left"] > .arrow {
+        right: -4px;
+    }
+
+    .tooltip[data-popper-placement^="right"] > .arrow {
+        left: -4px;
+    }
+</style>

@@ -1,0 +1,114 @@
+---
+import { getLocaleText } from "../../lib/helpers";
+import { getImageByName } from "../../lib/strapi";
+
+interface Props {
+  locales: any[];
+}
+
+const photo = await getImageByName("photo", 'small');
+
+const { locales } = Astro.props;
+---
+
+<div id="about" class="py-16">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl uppercase text-center">{getLocaleText(locales, 'about_page_title')}</h2>
+    <div class="grid grid-cols-1 gap-4 mt-16 lg:grid-cols-2 lg:gap-0">
+      <div class="text-center">
+        <div class="avatar flex items-center justify-center">
+          <div class="max-w-xs w-full">
+            <img
+              src={photo}
+              alt="Jefrien Alvizures"
+              class="transition h-80 w-80 object-cover mask mask-squircle ease-in-out delay-150 grayscale hover:grayscale-0"
+            />
+          </div>
+        </div>
+        <p class="max-w-sm w-full mx-auto mt-5 text-xl">
+          {getLocaleText(locales, 'about_description')}
+        </p>
+      </div>
+      <div>
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 text-neutral-800">
+          <div class="p-6 bg-base-100 shadow-xl border border-neutral-200">
+            <div class="card-body items-center text-center">
+              <h2 class="font-semibold text-2xl mb-2">Back-end Developer</h2>
+              <p>
+                {getLocaleText(locales, 'about_backend_description')}
+              </p>
+              <h3 class="font-semibold text-blue-600 mt-2 mb-2 text-xl">
+                {getLocaleText(locales, 'about_lang_speak')}
+              </h3>
+              <ul>
+                <li>PHP</li>
+                <li>Python</li>
+                <li>JavaScript</li>
+                <li>TypeScript</li>
+                <li>NodeJS</li>
+              </ul>
+              <h3 class="font-semibold text-blue-600 mt-2 mb-2 text-xl">
+                Dev Tools
+              </h3>
+              <ul>
+                <li>PHP Storm</li>
+                <li>VS Code</li>
+                <li>Laravel</li>
+                <li>Linux</li>
+                <li>Amazon AWS</li>
+                <li>Azure Cloud</li>
+              </ul>
+            </div>
+          </div>
+          <div class="p-6 bg-base-100 shadow-xl border border-neutral-200">
+            <div class="card-body items-center text-center">
+              <h2 class=" font-semibold text-2xl mb-2">Front-end Developer</h2>
+              <p>
+                {getLocaleText(locales, 'about_frontend_description')}
+              </p>
+              <h3 class="font-semibold text-blue-600 mt-2 mb-2 text-xl">
+                {getLocaleText(locales, 'about_lang_speak')}
+              </h3>
+              <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>SASS</li>
+                <li>LESS</li>
+                <li>JavaScript</li>
+              </ul>
+              <h3 class="font-semibold text-blue-600 mt-2 mb-2 text-xl">
+                Dev Tools
+              </h3>
+              <ul>
+                <li>Tailwind Css</li>
+                <li>VS Code</li>
+                <li>Vue</li>
+                <li>Angular</li>
+                <li>React</li>
+                <li>Vuetify</li>
+                <li>Astro</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+.mask {
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+  .mask-squircle {
+    -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KCiAgPHBhdGggZD0iTSAxMDAgMCBDIDIwIDAgMCAyMCAwIDEwMCBDIDAgMTgwIDIwIDIwMCAxMDAgMjAwIEMgMTgwIDIwMCAyMDAgMTgwIDIwMCAxMDAgQyAyMDAgMjAgMTgwIDAgMTAwIDAgWiIvPgoKPC9zdmc+);
+    mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KCiAgPHBhdGggZD0iTSAxMDAgMCBDIDIwIDAgMCAyMCAwIDEwMCBDIDAgMTgwIDIwIDIwMCAxMDAgMjAwIEMgMTgwIDIwMCAyMDAgMTgwIDIwMCAxMDAgQyAyMDAgMjAgMTgwIDAgMTAwIDAgWiIvPgoKPC9zdmc+);
+}
+</style>

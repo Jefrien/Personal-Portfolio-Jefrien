@@ -1,0 +1,36 @@
+---
+import { getImageUrl, getLocaleText } from "../../lib/helpers";
+import type { Project } from "../../types";
+
+interface Props {
+    project: Project;
+    locales: any;
+}
+
+const { project, locales } = Astro.props;
+
+---
+
+<div class="bg-slate-100">
+    <div class="py-12 max-w-7xl mx-auto">
+        <h3 class="text-3xl mb-6 text-center">{getLocaleText(locales, 'project_tecnologies')}</h3>
+        <div class="flex justify-center items-center gap-12">
+        {
+            project.attributes.tecnologias?.data?.map((tecnologia) => (
+                <div class="h-20">
+                    <img
+                        src={getImageUrl(
+                            tecnologia.attributes.logo.data?.attributes.url,
+                        )}
+                        alt={
+                            tecnologia.attributes.logo.data?.attributes
+                                .alternativeText
+                        }
+                        class="h-full"
+                    />
+                </div>
+            ))
+        }
+        </div>
+    </div>
+</div>

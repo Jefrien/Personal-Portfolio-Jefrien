@@ -1,0 +1,31 @@
+---
+import { getLocaleText } from '../../lib/helpers';
+import type { Project } from '../../types';
+
+interface Props {
+    project: Project;
+    locales: any;
+}
+const { project, locales } = Astro.props;
+---
+
+<div class="flex justify-start items-center mt-4 gap-4">
+    <button
+        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 transition hover:shadow-xl hover:shadow-blue-600/20 rounded-md"
+        data-dialog="dialog-contact-me"
+    >
+        {getLocaleText(locales, 'project_contactme')}
+    </button>
+
+    {
+        project?.attributes?.url && (
+            <a
+                href={project.attributes.url}
+                target="_blank"
+                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 transition hover:shadow-xl hover:shadow-blue-600/20 rounded-md"
+            >
+                View Demo
+            </a>
+        )
+    }
+</div>

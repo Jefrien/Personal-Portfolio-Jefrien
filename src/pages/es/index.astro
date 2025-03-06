@@ -1,0 +1,47 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import fetchApi from '../../lib/strapi';
+import HeadSection from '../../components/Layout/HeadSection.astro';
+import type { Project } from '../../types';
+import { getLocales } from '../../locale';
+import About from '../../components/Layout/About.astro';
+import Projects from '../../components/Layout/Projects.astro';
+import Contact from '../../components/Layout/Contact.astro';
+import Footer from '../../components/Layout/Footer.astro';
+import Menu from '../../components/Layout/Menu.astro';
+
+const indexLang = "es-GT";
+
+
+
+const projectsData = await fetchApi<Project[]>({
+    endpoint: "projects",
+    wrappedByKey: "data",
+    query: {
+        locale: indexLang,
+        "populate[0]": 'image',
+        "populate[1]": 'tecnologias',
+        sort: "publishedAt:desc",
+    },
+});
+
+const locales = await getLocales(indexLang)
+
+
+---
+
+<Layout title="Jefrien Alvizures - Portafolio">
+
+
+    <HeadSection locales={locales} />
+
+    <Menu locales={locales} />
+
+    <About locales={locales} />
+
+    <Projects locales={locales} projects={projectsData} />
+    
+    <Contact locales={locales} />
+
+    <Footer locales={locales} />
+</Layout>
